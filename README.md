@@ -1,4 +1,4 @@
-# next-minimal-routes [![Build Status][travis-badge]][travis-link] ![dependencies][dependencies-badge] [![minified size][bundlephobia-badge]][bundlephobia-link]
+# next-minimal-routes [![Build Status][travis-badge]][travis-link] [![minified size][bundlephobia-badge]][bundlephobia-link]
 
 [Next.js] dynamic URLs for the minimalist.
 
@@ -442,7 +442,6 @@ Servers are run at <http://localhost:3000>.
 [bundlephobia-badge]: https://img.shields.io/bundlephobia/min/next-minimal-routes.svg
 [bundlephobia-link]: https://bundlephobia.com/result?p=next-minimal-routes
 [components/link.js]: https://github.com/lydell/next-minimal-routes/blob/master/compontents/Link.js
-[dependencies-badge]: https://img.shields.io/david/lydell/next-minimal-routes.svg
 [doctoc]: https://github.com/thlorenz/doctoc/
 [eslint]: https://eslint.org/
 [express]: https://expressjs.com/
