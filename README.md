@@ -441,7 +441,7 @@ Servers are run at <http://localhost:3000>.
 [babel]: https://babeljs.io/
 [bundlephobia-badge]: https://img.shields.io/bundlephobia/min/next-minimal-routes.svg
 [bundlephobia-link]: https://bundlephobia.com/result?p=next-minimal-routes
-[components/link.js]: https://github.com/lydell/next-minimal-routes/blob/master/compontents/Link.js
+[components/link.js]: https://github.com/lydell/next-minimal-routes/blob/master/components/Link.js
 [doctoc]: https://github.com/thlorenz/doctoc/
 [eslint]: https://eslint.org/
 [express]: https://expressjs.com/
