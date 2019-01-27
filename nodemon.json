@@ -1,0 +1,8 @@
+{
+  "watch": [
+    "src",
+    "server",
+    "next.config.js",
+    "routes.js"
+  ]
+}
