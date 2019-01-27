@@ -219,13 +219,13 @@ type Route = {
 };
 ```
 
-| Key       | Type                                | Description                                                                                                                                                                            |
-| --------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| page      | `string`                            | The path to the page in `pages` that should be used for the route. Must start with a `/`.                                                                                              |
-| pattern   | `string`                            | The URL to the page (will be shown in the address bar). Can contain URL parameters. See [path-to-regexp] for pattern syntax. Must start with a `/`.                                    |
-| match     | `string => QueryObject | undefined` | A function that matches the pathname part of a URL (starting with a `/`) against `pattern`. If it matches, the URL parameters (if any) of the URL are returned, otherwise `undefined`. |
-| reverse   | `QueryObject => string`             | A function that replaces all URL parameters in `pattern` (if any) with values from the given object. May throw an error if the given parameters are invalid for the `pattern`.         |
-| `...rest` | `any`                               | Apart from the above keys you may attach any information you like to your routes. For example, sitemap data.                                                                           |
+| Key       | Type                                                | Description                                                                                                                                                                            |
+| --------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| page      | `string`                                            | The path to the page in `pages` that should be used for the route. Must start with a `/`.                                                                                              |
+| pattern   | `string`                                            | The URL to the page (will be shown in the address bar). Can contain URL parameters. See [path-to-regexp] for pattern syntax. Must start with a `/`.                                    |
+| match     | <code>string => QueryObject &vert; undefined</code> | A function that matches the pathname part of a URL (starting with a `/`) against `pattern`. If it matches, the URL parameters (if any) of the URL are returned, otherwise `undefined`. |
+| reverse   | `QueryObject => string`                             | A function that replaces all URL parameters in `pattern` (if any) with values from the given object. May throw an error if the given parameters are invalid for the `pattern`.         |
+| `...rest` | `any`                                               | Apart from the above keys you may attach any information you like to your routes. For example, sitemap data.                                                                           |
 
 ### `QueryObject`
 
