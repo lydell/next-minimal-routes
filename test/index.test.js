@@ -89,12 +89,10 @@ Object {
   });
 
   test("overriding `match`", () => {
-    const LEGACY_URLS = new Map(
-      Object.entries({
-        "/en/about-us.php": "about",
-        "/en-us/product.php": "product",
-      })
-    );
+    const LEGACY_URLS = new Map([
+      ["/en/about-us.php", "about"],
+      ["/en-us/product.php", "product"],
+    ]);
 
     const route = makeRoute({
       page: "/legacy",
