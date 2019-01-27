@@ -351,6 +351,10 @@ Given an array of [Route] objects and pathname part of a URL (starting with a
 Note that in Node.js you typically need to run `decodeURIComponent` on
 `pathname` before trying to match on it or extract URL parameters from it.
 
+[getRequestHandler] uses `matchRoute` behind the scenes, so usually you won’t
+need this function. But if you need to manually match something in the browser
+some time, `matchRoute` can be handy.
+
 | Parameter | Type           | Description            |
 | --------- | -------------- | ---------------------- |
 | routes    | `Array<Route>` | Routes to match.       |
