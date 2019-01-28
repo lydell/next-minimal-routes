@@ -33,6 +33,8 @@ function makeMatchFunction(pattern) {
   const regex = pathToRegexp(pattern, keys, {
     // Just like standard Next.js, don’t allow trailing slashes.
     strict: true,
+    // Just like standard Next.js, URLs are case sensitive.
+    sensitive: true,
   });
 
   return pathname => {

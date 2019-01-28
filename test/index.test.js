@@ -24,7 +24,7 @@ describe("makeRoute", () => {
     test("no params", () => {
       const route = makeRoute({ page: "/about" });
       expect(route.match("/about")).toEqual({});
-      expect(route.match("/About")).toEqual({});
+      expect(route.match("/About")).toBeUndefined();
       expect(route.match("/about/")).toBeUndefined();
       expect(route.match("/nope")).toBeUndefined();
     });
@@ -354,6 +354,7 @@ Object {
 
     expect(matchRoute(routes, "/nope")).toBeUndefined();
     expect(matchRoute(routes, "/about/")).toBeUndefined();
+    expect(matchRoute(routes, "/ABOUT")).toBeUndefined();
     expect(matchRoute(routes, "about")).toBeUndefined();
     expect(matchRoute(routes, "/abou")).toBeUndefined();
   });
