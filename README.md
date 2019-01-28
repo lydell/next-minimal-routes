@@ -23,8 +23,6 @@ Inspired by [next-routes] and [nextjs-dynamic-routes].
 - [Reference](#reference)
   - [`Route`](#route)
   - [`QueryObject`](#queryobject)
-    - [For query parameters](#for-query-parameters)
-    - [For URL parameters](#for-url-parameters)
   - [`makeRoute({ page, pattern = page, ...rest }): Route`](#makeroute-page-pattern--page-rest--route)
   - [`makeUrls({ route, params = {}, query = {}, hash = "" }): { href, as }`](#makeurls-route-params---query---hash-----href-as-)
   - [`matchRoute(routes, pathname): { route, params } | undefined`](#matchrouteroutes-pathname--route-params---undefined)
@@ -182,12 +180,6 @@ export default class Product extends React.Component {
 }
 ```
 
-**Note:** Since URL parameters are merged into `query`, you can’t have URL
-parameters and query parameters with the same name. URL parameters always take
-precedence over query parameters, overwriting any query parameters with the same
-names. This is due to how Next.js is designed. Rename your parameters if you run
-into conflicts.
-
 Finally, don’t forget to turn off [file system routing]:
 
 ```js
@@ -277,8 +269,9 @@ type Route = {
 The `query` object that Next.js gives you in `getInitialProps` is a
 `QueryObject`. You can pass `QueryObject`s to the `href` and `as` parameters of
 Next.js’ [`<Link>`](`next/link`) as well as to many [Router] methods
-(`next/router`). next-minimal-routes also uses `QueryObject` for objects of URL
-parameters.
+(`next/router`). In other words, this is no new concept if you’re familiar with
+Next.js, but next-minimal-routes puts a name on it and uses the same
+`QueryObject` structure for objects of URL parameters.
 
 ```js
 type QueryObject = {
@@ -289,7 +282,8 @@ type QueryObject = {
 #### For query parameters
 
 The keys can be anything, since the user can type any query parameters they like
-into the address bar.
+into the address bar, and you can create links with any query parameters you
+like.
 
 The values vary:
 
@@ -301,7 +295,8 @@ The values vary:
 
 #### For URL parameters
 
-The keys can only be the names specified in the `Route` pattern.
+The keys can only be the names specified in a given `Route` pattern, both when
+matching and reversing URLs.
 
 The values vary:
 
@@ -310,6 +305,17 @@ The values vary:
 | `string`        | For regular, required parameters. `:foo`   |
 | `Array<string>` | For repeating parameters. `:foo*`, `:foo+` |
 | `undefined`     | For optional parameters. `:foo?`, `:foo*`  |
+
+#### Mixing both URL parameters and query parameters
+
+The way Next.js is designed when it comes to implementing dynamic routes (URL
+parameters), is to merge the URL parameters into the `query` object given to
+`getInitialProps` (which normally only contains query parameters).
+
+Since URL parameters are merged into `query`, you can’t have URL parameters and
+query parameters with the same name. URL parameters always take precedence over
+query parameters, overwriting any query parameters with the same names. Rename
+your parameters if you run into conflicts.
 
 ### `makeRoute({ page, pattern = page, ...rest }): Route`
 

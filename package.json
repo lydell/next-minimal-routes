@@ -27,7 +27,7 @@
     "eslint": "eslint .",
     "eslint:fix": "eslint . --fix",
     "prettier": "prettier --write \"*.md\"",
-    "doctoc": "doctoc README.md",
+    "doctoc": "doctoc --maxlevel 3 README.md",
     "jest": "jest",
     "coverage": "jest --coverage",
     "build": "babel --env-name test --delete-dir-on-start src --out-dir dist",
