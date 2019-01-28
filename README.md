@@ -449,11 +449,11 @@ Note that you need to import `getRequestHandler` from
 
 `getRequestHandler` takes a single argument which is an object:
 
-| Key    | Type                    |
-| ------ | ----------------------- |
-| app    | Next.js app             |
-| routes | `Array<Route>`          |
-| skip   | `(req, res) => boolean` |
+| Key    | Type                    | Default                        |
+| ------ | ----------------------- | ------------------------------ |
+| app    | Next.js app             | **Required**                   |
+| routes | `Array<Route>`          | **Required**                   |
+| skip   | `(req, res) => boolean` | Skip static files – see below. |
 
 Returns a typical Node.js `(req, res) => {}` request handler function.
 
