@@ -5,6 +5,7 @@
 - ✔️ Routes are represented as plain objects.
 - ✔️ [path-to-regexp] patterns.
 - ✔️ Use the standard Next.js `<Link>` and `Router`.
+- ✔️ Optional: Build the abstraction _you_ need on top.
 - ✔️ Well tested.
 
 Inspired by [next-routes] and [nextjs-dynamic-routes].
@@ -18,6 +19,7 @@ Inspired by [next-routes] and [nextjs-dynamic-routes].
 
 - [Installation](#installation)
 - [Example](#example)
+- [Summary](#summary)
 - [Reference](#reference)
   - [`Route`](#route)
   - [`QueryObject`](#queryobject)
@@ -26,7 +28,7 @@ Inspired by [next-routes] and [nextjs-dynamic-routes].
   - [`makeRoute({ page, pattern = page, ...rest }): Route`](#makeroute-page-pattern--page-rest--route)
   - [`makeUrls({ route, params = {}, query = {}, hash = "" }): { href, as }`](#makeurls-route-params---query---hash-----href-as-)
   - [`matchRoute(routes, pathname): { route, params } | undefined`](#matchrouteroutes-pathname--route-params---undefined)
-  - [`getRequestHandler({ app, routes }): Function`](#getrequesthandler-app-routes--function)
+  - [`getRequestHandler({ app, routes, skip = skipStatic }): Function`](#getrequesthandler-app-routes-skip--skipstatic--function)
 - [Development](#development)
   - [npm scripts](#npm-scripts)
   - [Directories](#directories)
@@ -59,6 +61,8 @@ objects. `makeRoute` helps you create them.
 // routes.js
 const { makeRoute } = require("next-minimal-routes");
 
+// It’s nice storing your routes in an object (allowing you to easily refer to
+// them by name), but you can store them however you want.
 module.exports = {
   home: makeRoute({ page: "/" }),
   about: makeRoute({ page: "/about" }),
@@ -72,6 +76,7 @@ In your server, use `getRequestHandler` to route requests to the correct page.
 ```js
 const express = require("express");
 const next = require("next");
+const slashes = require("connect-slashes");
 
 // New imports:
 const { getRequestHandler } = require("next-minimal-routes/server");
@@ -86,6 +91,9 @@ const handle = getRequestHandler({ app, routes: Object.values(routes) });
 
 app.prepare().then(() => {
   const server = express();
+
+  // Optional: Redirect away trailing slashes.
+  server.use(slashes(false));
 
   server.get("*", handle);
 
@@ -107,6 +115,7 @@ import Link from "next/link";
 import Router from "next/router";
 import { makeUrls } from "next-minimal-routes";
 import routes from "../routes";
+import CustomLink from "../components/Link";
 
 export default () => (
   <div>
@@ -119,6 +128,11 @@ export default () => (
     <Link {...makeUrls({ route: routes.product, params: { slug: "hammer" } })}>
       <a>Product: Hammer</a>
     </Link>
+
+    {/* There’s nothing stopping you from making a convenience component if you want: */}
+    <CustomLink route="product" params={{ slug: "hammer" }}>
+      <a>Product: Hammer</a>
+    </CustomLink>
 
     <button
       type="button"
@@ -191,6 +205,37 @@ npm ci
 npm run next:dev
 ```
 
+## Summary
+
+After the initial setup, there’s not much to remember:
+
+> Use [makeRoute] to create a route, and [makeUrls] to link to it. Implement
+> `static getInitialProps({ query }) {}` to get your params (from `query`).
+
+```js
+// In routes.js (or wherever you store your routes):
+const productRoute = makeRoute({
+  page: "/product",
+  pattern: "/product/:slug",
+});
+
+// When you need a link:
+const { href, as } = makeUrls({
+  route: productRoute,
+  params: { slug: "hammer" },
+});
+
+// When you need a param:
+class ProductPage extends React.Component {
+  static getInitialProps({ query: { slug } }) {
+    console.log(slug);
+  }
+}
+```
+
+Note that if your project has a custom `<Link>` component, you probably don’t
+need to use `makeUrls` at all most of the time.
+
 ## Reference
 
 First off, there are two important types of objects:
@@ -219,13 +264,13 @@ type Route = {
 };
 ```
 
-| Key       | Type                                                | Description                                                                                                                                                                            |
-| --------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| page      | `string`                                            | The path to the page in `pages` that should be used for the route. Must start with a `/`.                                                                                              |
-| pattern   | `string`                                            | The URL to the page (will be shown in the address bar). Can contain URL parameters. See [path-to-regexp] for pattern syntax. Must start with a `/`.                                    |
-| match     | <code>string => QueryObject &vert; undefined</code> | A function that matches the pathname part of a URL (starting with a `/`) against `pattern`. If it matches, the URL parameters (if any) of the URL are returned, otherwise `undefined`. |
-| reverse   | `QueryObject => string`                             | A function that replaces all URL parameters in `pattern` (if any) with values from the given object. May throw an error if the given parameters are invalid for the `pattern`.         |
-| `...rest` | `any`                                               | Apart from the above keys you may attach any information you like to your routes. For example, sitemap data.                                                                           |
+| Key       | Type                                                | Description                                                                                                                                                                                                                                          |
+| --------- | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| page      | `string`                                            | The path to the page in `pages` that should be used for the route. Must start with a `/`.                                                                                                                                                            |
+| pattern   | `string`                                            | The URL to the page (will be shown in the address bar). Can contain URL parameters. See [path-to-regexp] for pattern syntax. Must start with a `/`. Just like Next.js, optional trailing slashes are not allowed: `/about/` does not match `/about`. |
+| match     | <code>string => QueryObject &vert; undefined</code> | A function that matches the pathname part of a URL (starting with a `/`) against `pattern`. If it matches, the URL parameters (if any) of the URL are returned, otherwise `undefined`.                                                               |
+| reverse   | `QueryObject => string`                             | A function that replaces all URL parameters in `pattern` (if any) with values from the given object. May throw an error if the given parameters are invalid for the `pattern`.                                                                       |
+| `...rest` | `any`                                               | Apart from the above keys you may attach any information you like to your routes. For example, sitemap data.                                                                                                                                         |
 
 ### `QueryObject`
 
@@ -343,6 +388,12 @@ export function makeUrls({ route, params = {}, query = {}, hash = "" }) {
 }
 ```
 
+Optionally, make your own `<Link>` component, wrapping `next/link`, for
+convenience. I usually do that anyway (for example, I might want `passHref` to
+default to `true`, or automatically add `/en/` etc. on a multi-language site).
+For inspiration, there are three examples in [components/Link.js]. This allows
+importing only your `Link` instead of `routes`, `getUrls` and `next/link`.
+
 ### `matchRoute(routes, pathname): { route, params } | undefined`
 
 Given an array of [Route] objects and pathname part of a URL (starting with a
@@ -369,7 +420,11 @@ type ReturnValue = {
 }
 ```
 
-### `getRequestHandler({ app, routes }): Function`
+**Note:** It’s common to store routes in an _object._ This function takes an
+_array_ of routes. If so, simply use `Object.values`:
+`matchRoute(Object.values(routes), pathname)`.
+
+### `getRequestHandler({ app, routes, skip = skipStatic }): Function`
 
 When using a [custom server in Next.js][nextjs-server], these two lines are
 crucial:
@@ -385,17 +440,30 @@ const handle = app.getRequestHandler();
 const handle = getRequestHandler({ app, routes });
 ```
 
+`getRequestHandler` calls `const handle = getRequestHandler({ app, routes })`
+internally, and uses `app.render` for matched routes, and `handle` for
+everything else.
+
 Note that you need to import `getRequestHandler` from
 `"next-minimal-routes/server"` (rather than just `"next-minimal-routes"`).
 
 `getRequestHandler` takes a single argument which is an object:
 
-| Key    | Type           |
-| ------ | -------------- |
-| app    | Next.js app    |
-| routes | `Array<Route>` |
+| Key    | Type                    |
+| ------ | ----------------------- |
+| app    | Next.js app             |
+| routes | `Array<Route>`          |
+| skip   | `(req, res) => boolean` |
 
 Returns a typical Node.js `(req, res) => {}` request handler function.
+
+The `skip` function lets skip route matching for certain requests, and use the
+standard Next.js `handle` function directly for them. By default, `skip` does so
+for `/_next/*` and `/static/*` URLs (static files).
+
+**Note:** It’s common to store routes in an _object._ This function takes an
+_array_ of routes. If so, simply use `Object.values`:
+`matchRoute(Object.values(routes), pathname)`.
 
 ## Development
 
@@ -450,7 +518,7 @@ Servers are run at <http://localhost:3000>.
 [eslint]: https://eslint.org/
 [express]: https://expressjs.com/
 [file system routing]: https://nextjs.org/docs#disabling-file-system-routing
-[getrequesthandler]: #getrequesthandler-app-routes--function
+[getrequesthandler]: #getrequesthandler-app-routes-skip--skipstatic--function
 [jest]: https://jestjs.io/
 [makeroute]: #makeroute-page-pattern--page-rest--route
 [makeurls]: #makeurls-route-params---query---hash-----href-as-
