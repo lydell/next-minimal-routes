@@ -42,6 +42,17 @@ describe("makeRoute", () => {
       expect(route.match("/blog/one")).toEqual({ parts: ["one"] });
       expect(route.match("/blog/one/two")).toEqual({ parts: ["one", "two"] });
     });
+
+    test("params do not contain Object.prototype stuff", () => {
+      const route = makeRoute({ page: "/about" });
+      const match = route.match("/about");
+      expect(match).toEqual({});
+      expect(match.hasOwnProperty).toBeUndefined();
+      expect(typeof {}.hasOwnProperty).toBe("function");
+
+      const route2 = makeRoute({ page: "/:hasOwnProperty" });
+      expect(route2.match("/test")).toEqual({ hasOwnProperty: "test" });
+    });
   });
 
   describe("reverse", () => {
@@ -61,6 +72,49 @@ describe("makeRoute", () => {
       ).toThrowErrorMatchingInlineSnapshot(
         `"Expected \\"slug\\" to match \\"[^\\\\/]+?\\", but got \\"\\""`
       );
+    });
+
+    test("param modifiers and custom params", () => {
+      function reverse(pattern, params) {
+        return makeRoute({ page: "/test", pattern }).reverse(params);
+      }
+
+      expect(reverse("/test/:optional?")).toBe("/test");
+      expect(reverse("/test/:optional?", { optional: "opt" })).toBe(
+        "/test/opt"
+      );
+
+      expect(reverse("/test/:zeroOrMore*")).toBe("/test");
+      expect(reverse("/test/:zeroOrMore*", { zeroOrMore: [] })).toBe("/test");
+      expect(reverse("/test/:zeroOrMore*", { zeroOrMore: "a" })).toBe(
+        "/test/a"
+      );
+      expect(reverse("/test/:zeroOrMore*", { zeroOrMore: ["a", "b"] })).toBe(
+        "/test/a/b"
+      );
+
+      expect(reverse("/test/:oneOrMore+", { oneOrMore: "a" })).toBe("/test/a");
+      expect(reverse("/test/:oneOrMore+", { oneOrMore: ["a", "b"] })).toBe(
+        "/test/a/b"
+      );
+
+      expect(reverse("/test/:digits(\\d+)", { digits: "123" })).toBe(
+        "/test/123"
+      );
+
+      expect(reverse("/unnamed/(.*)", { 0: "test" })).toBe("/unnamed/test");
+
+      expect(reverse("/:one?/:two/:three*", { two: "2" })).toBe("/2");
+      expect(reverse("/:one?/:two/:three*", { one: "1", two: "2" })).toBe(
+        "/1/2"
+      );
+      expect(
+        reverse("/:one?/:two/:three*", {
+          one: "1",
+          two: "2",
+          three: ["3", "4"],
+        })
+      ).toBe("/1/2/3/4");
     });
 
     test("encoding", () => {
@@ -111,7 +165,7 @@ Object {
     const route = makeRoute({
       page: "/file",
       pattern: "/file/:file",
-      reverse: ({ file }) => `/file/${file.toLowerCase()}`,
+      reverse: ({ file }) => `/file/${encodeURIComponent(file.toLowerCase())}`,
     });
 
     expect(route.reverse({ file: "img.BMP" })).toBe("/file/img.bmp");
