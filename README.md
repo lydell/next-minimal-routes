@@ -446,9 +446,8 @@ const handle = app.getRequestHandler();
 const handle = getRequestHandler({ app, routes });
 ```
 
-`getRequestHandler` calls `const handle = getRequestHandler({ app, routes })`
-internally, and uses `app.render` for matched routes, and `handle` for
-everything else.
+`getRequestHandler` calls `const handle = app.getRequestHandler()` internally,
+and uses `app.render` for matched routes, and `handle` for everything else.
 
 Note that you need to import `getRequestHandler` from
 `"next-minimal-routes/server"` (rather than just `"next-minimal-routes"`).
