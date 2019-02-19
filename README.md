@@ -235,7 +235,7 @@ First off, there are two important types of objects:
 - [Route]
 - [QueryObject]
 
-With those out of the way, this are the actual exported functions:
+With those out of the way, these are the actual exported functions:
 
 - [makeRoute]
 - [makeUrls]
@@ -376,7 +376,7 @@ The easiest way to see exactly what this function does is to look at its source
 code:
 
 ```js
-export function makeUrls({ route, params = {}, query = {}, hash = "" }) {
+function makeUrls({ route, params = {}, query = {}, hash = "" }) {
   return {
     href: {
       pathname: route.page,
