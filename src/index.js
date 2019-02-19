@@ -1,6 +1,6 @@
-import pathToRegexp from "path-to-regexp";
+const pathToRegexp = require("path-to-regexp");
 
-export function makeRoute({ page, pattern = page, ...rest }) {
+function makeRoute({ page, pattern = page, ...rest }) {
   if (typeof page !== "string") {
     throw new TypeError(`Expected 'page' to be a string, but got: ${page}`);
   }
@@ -59,7 +59,7 @@ function makeMatchFunction(pattern) {
   };
 }
 
-export function makeUrls({ route, params = {}, query = {}, hash = "" }) {
+function makeUrls({ route, params = {}, query = {}, hash = "" }) {
   return {
     href: {
       pathname: route.page,
@@ -76,7 +76,7 @@ export function makeUrls({ route, params = {}, query = {}, hash = "" }) {
   };
 }
 
-export function matchRoute(routes, pathname) {
+function matchRoute(routes, pathname) {
   for (let index = 0; index < routes.length; index++) {
     const route = routes[index];
     const match = route.match(pathname);
@@ -89,3 +89,10 @@ export function matchRoute(routes, pathname) {
   }
   return undefined;
 }
+
+module.exports = {
+  __esModule: true,
+  makeRoute,
+  makeUrls,
+  matchRoute,
+};

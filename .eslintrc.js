@@ -24,6 +24,10 @@ module.exports = {
     },
     {
       files: ["src/*.js"],
+      globals: {
+        module: false,
+        require: false,
+      },
       rules: {
         "no-console": "error",
         "no-restricted-syntax": [

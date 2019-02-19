@@ -1,8 +1,8 @@
-import urlLib from "url";
+const urlLib = require("url");
 
-import { matchRoute } from "./index";
+const { matchRoute } = require("./index");
 
-export function getRequestHandler({ app, routes, skip = defaultSkip }) {
+function getRequestHandler({ app, routes, skip = defaultSkip }) {
   const handle = app.getRequestHandler();
 
   return (req, res) => {
@@ -40,3 +40,8 @@ export function getRequestHandler({ app, routes, skip = defaultSkip }) {
 function defaultSkip(req) {
   return req.url.startsWith("/_next/") || req.url.startsWith("/static/");
 }
+
+module.exports = {
+  __esModule: true,
+  getRequestHandler,
+};
