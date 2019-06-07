@@ -114,9 +114,7 @@ export function Link3({
       hash,
     });
   } catch (error) {
-    const message = `<Link>: Failed to make URLs for route '${routeName}': ${
-      error.message
-    }`;
+    const message = `<Link>: Failed to make URLs for route '${routeName}': ${error.message}`;
     if (!warned.has(message)) {
       console.warn(message);
       warned.add(message);
